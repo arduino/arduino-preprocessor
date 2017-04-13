@@ -1,5 +1,5 @@
 #!/bin/bash -ex
-# Copyright (c) 2017 Arduino LLC
+# Copyright (c) 2017 BCMI LABS SA
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -108,7 +108,8 @@ CXXFLAGS=`clang/bin/llvm-config --cxxflags`
 LDFLAGS=`clang/bin/llvm-config --ldflags`
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
-$CXX main.cpp -o objdir/arduino-preprocessor $CXXFLAGS $LDFLAGS -Wl,--start-group $LLVMLIBS $CLANGLIBS -Wl,--end-group
+SOURCES="main.cpp CommandLine.cpp"
+$CXX $SOURCES -o objdir/arduino-preprocessor $CXXFLAGS $LDFLAGS -Wl,--start-group $LLVMLIBS $CLANGLIBS -Wl,--end-group
 
 rm -f arduino-preprocessor-${OUTPUT_VERSION}-${OUTPUT_TAG}.tar.bz2
 mv objdir arduino-preprocessor
