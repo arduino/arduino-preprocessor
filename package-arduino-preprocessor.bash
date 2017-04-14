@@ -108,7 +108,7 @@ CXXFLAGS=`clang/bin/llvm-config --cxxflags`
 LDFLAGS=`clang/bin/llvm-config --ldflags`
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
-SOURCES="main.cpp CommandLine.cpp IdentifiersList.cpp"
+SOURCES="main.cpp ArduinoDiagnosticConsumer.cpp CommandLine.cpp IdentifiersList.cpp"
 $CXX $SOURCES -o objdir/arduino-preprocessor $CXXFLAGS $LDFLAGS -Wl,--start-group $LLVMLIBS $CLANGLIBS -Wl,--end-group
 
 rm -f arduino-preprocessor-${OUTPUT_VERSION}-${OUTPUT_TAG}.tar.bz2

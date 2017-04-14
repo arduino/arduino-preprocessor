@@ -45,6 +45,7 @@
 #include <sstream>
 #include <list>
 
+#include "ArduinoDiagnosticConsumer.h"
 #include "Config.h"
 #include "CommandLine.h"
 #include "IdentifiersList.h"
@@ -56,49 +57,6 @@ using namespace llvm;
 using namespace std;
 
 IdentifiersList undeclaredIdentifiers;
-
-class UndefinedIdentifiersCollector : public DiagnosticConsumer {
-
-    void HandleDiagnostic(DiagnosticsEngine::Level level, const Diagnostic& info) override {
-        // DiagnosticConsumer::HandleDiagnostic(level, info);
-
-        if (level == DiagnosticsEngine::Level::Error) {
-            const SourceManager &sm = info.getSourceManager();
-            const SourceLocation &loc = info.getLocation();
-            const SourceLocation &sl = sm.getSpellingLoc(loc);
-            if (debugOutput) {
-                outs() << sm.getSpellingLineNumber(sl) << ":" << sm.getSpellingColumnNumber(sl) << " ";
-            }
-
-            unsigned id = info.getID();
-            if (id == 3441 /* use of undeclared identifier */) {
-                // It seems that the only way to retrieve the undeclared symbol
-                // is to print it as a localization string.
-                const char *fmt = "%0";
-                SmallString<100> outArg;
-                info.FormatDiagnostic(fmt, fmt + 2, outArg);
-                // we should also remove quotes as well...
-                StringRef identifier = outArg.substr(1, outArg.size() - 2);
-                if (debugOutput) {
-                    outs() << "Found undeclared identifier '" << identifier << "'\n";
-                }
-
-                // Save the identifier position for later processing
-                IdentifierLocation *m = new IdentifierLocation;
-                m->location = FullSourceLoc(loc, sm);
-                m->identifier = identifier.str();
-                undeclaredIdentifiers.push_front(m);
-                return;
-            }
-
-            if (debugOutput) {
-                SmallString<100> outStr;
-                info.FormatDiagnostic(outStr);
-                outs() << "(" << id << ") " << outStr << "\n";
-            }
-        }
-    }
-};
 
 Rewriter rewriter;
 
@@ -249,7 +207,10 @@ int main(int argc, const char **argv) {
     CommonOptionsParser optParser = doCommandLineParsing(argc, argv);
     ClangTool tool(optParser.getCompilations(), optParser.getSourcePathList());
 
-    UndefinedIdentifiersCollector dc;
+    ArduinoDiagnosticConsumer dc;
+    if (outputOnlyNeededPrototypes) {
+        dc.collectUndeclaredIdentifiersIn(undeclaredIdentifiers);
+    }
     tool.setDiagnosticConsumer(&dc);
 
     int res = tool.run(newFrontendActionFactory<INOPreprocessAction>().get());
