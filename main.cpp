@@ -47,38 +47,13 @@
 
 #include "Config.h"
 #include "CommandLine.h"
+#include "IdentifiersList.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
 using namespace clang::tooling;
 using namespace llvm;
 using namespace std;
-
-typedef struct {
-    FullSourceLoc location;
-    string identifier;
-} IdentifierLocation;
-
-class IdentifiersList : public list<IdentifierLocation *> {
-public:
-
-    void dump() {
-        outs() << "Undeclared identifiers:\n";
-        for (IdentifierLocation *m : * this) {
-            const FullSourceLoc &sl = m->location.getSpellingLoc();
-            outs() << "  " << sl.getSpellingLineNumber() << ":" << sl.getSpellingColumnNumber();
-            outs() << " " << m->identifier << "\n";
-        }
-    }
-
-    IdentifierLocation *findFirst(string name) {
-        for (IdentifierLocation *m : * this) {
-            if (m->identifier == name)
-                return m;
-        }
-        return nullptr;
-    }
-};
 
 IdentifiersList undeclaredIdentifiers;
 
@@ -254,7 +229,10 @@ public:
 
     virtual void EndSourceFileAction() override {
         if (debugOutput) {
-            undeclaredIdentifiers.dump();
+            ostringstream out;
+            undeclaredIdentifiers.dump(out);
+            out.flush();
+            outs() << out.str();
         }
 
         const FileID mainFileID = rewriter.getSourceMgr().getMainFileID();
