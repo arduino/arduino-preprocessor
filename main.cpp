@@ -208,9 +208,7 @@ int main(int argc, const char **argv) {
     ClangTool tool(optParser.getCompilations(), optParser.getSourcePathList());
 
     ArduinoDiagnosticConsumer dc;
-    if (outputOnlyNeededPrototypes) {
-        dc.collectUndeclaredIdentifiersIn(undeclaredIdentifiers);
-    }
+    dc.collectUndeclaredIdentifiersIn(undeclaredIdentifiers);
     if (outputDiagnostics) {
         dc.outputJsonDiagnosticsTo(cout);
     }
