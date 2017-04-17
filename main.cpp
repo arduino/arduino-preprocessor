@@ -211,6 +211,9 @@ int main(int argc, const char **argv) {
     if (outputOnlyNeededPrototypes) {
         dc.collectUndeclaredIdentifiersIn(undeclaredIdentifiers);
     }
+    if (outputDiagnostics) {
+        dc.outputJsonDiagnosticsTo(cout);
+    }
     tool.setDiagnosticConsumer(&dc);
 
     int res = tool.run(newFrontendActionFactory<INOPreprocessAction>().get());

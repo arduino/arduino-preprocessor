@@ -38,5 +38,6 @@ using namespace llvm;
 
 extern bool debugOutput;
 extern bool outputOnlyNeededPrototypes;
+extern bool outputDiagnostics;
 
 CommonOptionsParser doCommandLineParsing(int argc, const char **argv);

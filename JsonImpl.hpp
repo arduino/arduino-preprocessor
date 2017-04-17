@@ -30,22 +30,52 @@
 #pragma once
 
 #include <clang/AST/ASTConsumer.h>
-
-#include "IdentifiersList.h"
+#include <sstream>
 
 using namespace clang;
-using namespace llvm;
+using namespace std;
 
-class ArduinoDiagnosticConsumer : public DiagnosticConsumer {
-public:
+#define JSON_NOEXCEPTION
+#include "json.hpp"
+#include "clang/include/clang/Basic/SourceManager.h"
+using json = nlohmann::json;
 
-    void collectUndeclaredIdentifiersIn(IdentifiersList &list);
+template<unsigned InternalLen>
+inline string encode(const SmallString<InternalLen> &s) {
+    return s.str().str();
+}
 
-    void outputJsonDiagnosticsTo(ostream &out);
+inline json encode(const SourceManager &sm, const SourceLocation &loc) {
+    PresumedLoc presumed = sm.getPresumedLoc(loc);
+    stringstream pos;
+    pos << presumed.getLine() << ":" << presumed.getColumn();
+    return json{
+        {"file", presumed.getFilename()},
+        {"pos", pos.str()}};
+}
 
-private:
-    IdentifiersList *undeclaredIdentifiersList = nullptr;
-    ostream *jsonDiagnosticOutput = nullptr;
+inline json encode(const SourceManager &sm, const CharSourceRange &range) {
+    if (range.isInvalid()) {
+        return json{};
+    }
+    return json{
+        {"begin", encode(sm, range.getBegin())},
+        {"end", encode(sm, range.getEnd())}};
+}
 
-    void HandleDiagnostic(DiagnosticsEngine::Level level, const Diagnostic& info) override;
-};
+inline json encode(const SourceManager &sm, const FixItHint &hint) {
+    return json{
+        {"before_previous", hint.BeforePreviousInsertions},
+        {"text", hint.CodeToInsert},
+        {"insert_from", encode(sm, hint.InsertFromRange)},
+        {"remove", encode(sm, hint.RemoveRange)}};
+}
+
+template<typename T>
+inline json encode(const SourceManager &sm, const ArrayRef<T> &array) {
+    json res = json::array();
+    for (T elem : array) {
+        res.push_back(encode(sm, elem));
+    }
+    return res;
+}

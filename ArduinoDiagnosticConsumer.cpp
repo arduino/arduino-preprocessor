@@ -27,11 +27,20 @@
  * the GNU General Public License.
  */
 
+#include <clang/Basic/Diagnostic.h>
+
 #include "ArduinoDiagnosticConsumer.h"
 #include "CommandLine.h"
+#include "JsonImpl.hpp"
+
+using namespace clang;
 
 void ArduinoDiagnosticConsumer::collectUndeclaredIdentifiersIn(IdentifiersList &list) {
     undeclaredIdentifiersList = &list;
+}
+
+void ArduinoDiagnosticConsumer::outputJsonDiagnosticsTo(ostream &out) {
+    jsonDiagnosticOutput = &out;
 }
 
 void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level, const Diagnostic& info) {
@@ -66,6 +75,21 @@ void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level,
             return;
         }
 
+    }
+
+    if (jsonDiagnosticOutput) {
+        const SourceManager &sm = info.getSourceManager();
+
+        SmallString<100> message;
+        info.FormatDiagnostic(message);
+
+        json data = json{
+            {"location", encode(sm, info.getLocation())},
+            {"message", encode(message)},
+            {"ranges", encode(sm, info.getRanges())},
+            {"hints", encode(sm, info.getFixItHints())},
+        };
+        *jsonDiagnosticOutput << data.dump() << "\n";
     }
 
     if (debugOutput) {

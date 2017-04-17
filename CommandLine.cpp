@@ -35,6 +35,7 @@
 using namespace std;
 
 bool debugOutput;
+bool outputDiagnostics;
 bool outputOnlyNeededPrototypes;
 
 static cl::OptionCategory arduinoToolCategory("Arduino options");
@@ -46,6 +47,7 @@ static cl::extrahelp arduinoHelp("\n"
 static cl::extrahelp commonHelp(CommonOptionsParser::HelpMessage);
 static cl::opt<bool> debugOutputOpt("debug");
 static cl::opt<bool> outputOnlyNeededPrototypesOpt("output-only-needed-prototypes");
+static cl::opt<bool> outputDiagnosticsOpt("diagnostics");
 
 static void printVersion() {
     cout << "Arduino (https://www.arduino.cc/):\n";
@@ -61,12 +63,17 @@ CommonOptionsParser doCommandLineParsing(int argc, const char **argv) {
     outputOnlyNeededPrototypesOpt.setInitialValue(false);
     outputOnlyNeededPrototypesOpt.setDescription("Output a prototype only if a forward declaration is needed (experimental)");
 
+    outputDiagnosticsOpt.setCategory(arduinoToolCategory);
+    outputDiagnosticsOpt.setInitialValue(false);
+    outputDiagnosticsOpt.setDescription("Output diagnostics (warnings/errors) in json format");
+
     cl::AddExtraVersionPrinter(printVersion);
 
     CommonOptionsParser optParser(argc, argv, arduinoToolCategory);
 
     debugOutput = debugOutputOpt.getValue();
     outputOnlyNeededPrototypes = outputOnlyNeededPrototypesOpt.getValue();
+    outputDiagnostics = outputDiagnosticsOpt.getValue();
 
     return optParser;
 }
