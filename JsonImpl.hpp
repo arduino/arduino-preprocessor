@@ -30,6 +30,7 @@
 #pragma once
 
 #include <clang/AST/ASTConsumer.h>
+#include <clang/Basic/SourceManager.h>
 #include <sstream>
 
 using namespace clang;
@@ -37,7 +38,6 @@ using namespace std;
 
 #define JSON_NOEXCEPTION
 #include "json.hpp"
-#include "clang/include/clang/Basic/SourceManager.h"
 using json = nlohmann::json;
 
 template<unsigned InternalLen>

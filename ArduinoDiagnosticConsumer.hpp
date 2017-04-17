@@ -31,7 +31,7 @@
 
 #include <clang/AST/ASTConsumer.h>
 
-#include "IdentifiersList.h"
+#include "IdentifiersList.hpp"
 
 using namespace clang;
 using namespace llvm;

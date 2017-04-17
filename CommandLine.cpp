@@ -27,8 +27,8 @@
  * the GNU General Public License.
  */
 
-#include "CommandLine.h"
-#include "Config.h"
+#include "CommandLine.hpp"
+#include "Config.hpp"
 
 #include <iostream>
 

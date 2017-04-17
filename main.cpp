@@ -45,10 +45,10 @@
 #include <sstream>
 #include <list>
 
-#include "ArduinoDiagnosticConsumer.h"
-#include "Config.h"
-#include "CommandLine.h"
-#include "IdentifiersList.h"
+#include "ArduinoDiagnosticConsumer.hpp"
+#include "Config.hpp"
+#include "CommandLine.hpp"
+#include "IdentifiersList.hpp"
 
 using namespace clang;
 using namespace clang::ast_matchers;

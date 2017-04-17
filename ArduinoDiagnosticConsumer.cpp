@@ -29,8 +29,8 @@
 
 #include <clang/Basic/Diagnostic.h>
 
-#include "ArduinoDiagnosticConsumer.h"
-#include "CommandLine.h"
+#include "ArduinoDiagnosticConsumer.hpp"
+#include "CommandLine.hpp"
 #include "JsonImpl.hpp"
 
 using namespace clang;

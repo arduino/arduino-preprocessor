@@ -27,7 +27,7 @@
  * the GNU General Public License.
  */
 
-#include "IdentifiersList.h"
+#include "IdentifiersList.hpp"
 
 void IdentifiersList::dump(ostream &out) {
     out << "Undeclared identifiers:\n";
