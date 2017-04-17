@@ -66,10 +66,11 @@ void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level,
             return;
         }
 
-        if (debugOutput) {
-            SmallString<100> outStr;
-            info.FormatDiagnostic(outStr);
-            outs() << "(" << id << ") " << outStr << "\n";
-        }
+    }
+
+    if (debugOutput) {
+        SmallString<100> outStr;
+        info.FormatDiagnostic(outStr);
+        outs() << "(" << info.getID() << ") " << outStr << "\n";
     }
 }
