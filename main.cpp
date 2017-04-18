@@ -160,15 +160,29 @@ public:
     }
 
     void detectInsertionPoint(SourceManager &sm, FullSourceLoc &begin, FullSourceLoc &end) {
-        if (insertionPointFound)return;
+        if (insertionPointFound) {
+            return;
+        }
 
-        FullSourceLoc first = undeclaredIdentifiers.front()->location;
+        if (undeclaredIdentifiers.empty()) {
+            //insertionPoint = begin;
+            //insertionPointFound = true;
+            //if (debugOutput) {
+            //    outs() << "  !! Insertion point found (using the first available position)\n";
+            //}
+            return;
+        }
 
+        FullSourceLoc first = undeclaredIdentifiers.back()->location;
         if (first.isBeforeInTranslationUnitThan(begin)) {
             if (debugOutput) {
                 outs() << "  !! Insertion point found!\n";
             }
             insertionPointFound = true;
+            return;
+        }
+
+        if (end.isInvalid()) {
             return;
         }
 
