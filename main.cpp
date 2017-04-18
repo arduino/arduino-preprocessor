@@ -79,7 +79,7 @@ public:
 
     void run(const MatchFinder::MatchResult &match) override {
         ASTContext *ctx = match.Context;
-        SourceManager *sm = &ctx->getSourceManager();
+        SourceManager &sm = ctx->getSourceManager();
 
         const FunctionDecl *f = match.Nodes.getNodeAs<FunctionDecl>("function_decl");
         if (f) {
@@ -102,14 +102,9 @@ public:
                 return;
             }
 
+            detectInsertionPoint(sm, begin, end);
             if (!insertionPointFound) {
-                insertionPointFound = true;
-                insertionPoint = begin;
-                presumedInsertionPoint = sm->getPresumedLoc(begin, true);
-                if (debugOutput) {
-                    outs() << "  !! Insertion point set to ";
-                    outs() << begin.getSpellingLineNumber() << ":" << begin.getSpellingColumnNumber() << "\n";
-                }
+                return;
             }
 
             if (outputOnlyNeededPrototypes) {
@@ -124,7 +119,7 @@ public:
             }
 
             // Extract line pragma for prototype insertion
-            writeLineInfo(sm->getPresumedLoc(loc, true));
+            writeLineInfo(sm.getPresumedLoc(loc, true));
 
             // Extract prototype from function using the pretty printer
             // and stopping at the first open curly brace "{"
@@ -142,10 +137,16 @@ public:
 
         const VarDecl *v = match.Nodes.getNodeAs<VarDecl>("var_decl");
         if (v) {
-            auto loc = ctx->getFullLoc(v->getLocStart());
+            FullSourceLoc loc = ctx->getFullLoc(v->getLocStart());
+            SourceRange r = v->getSourceRange();
+            FullSourceLoc begin = ctx->getFullLoc(r.getBegin());
+            FullSourceLoc end = ctx->getFullLoc(r.getEnd());
+
             if (debugOutput) {
                 outs() << "Variable " << v->getName() << " declared at ";
-                outs() << loc.getSpellingLineNumber() << ":" << loc.getSpellingColumnNumber() << "\n";
+                outs() << loc.getSpellingLineNumber() << ":" << loc.getSpellingColumnNumber();
+                outs() << " (range " << begin.getSpellingLineNumber() << ":" << begin.getSpellingColumnNumber();
+                outs() << " to " << end.getSpellingLineNumber() << ":" << end.getSpellingColumnNumber() << ")\n";
             }
             if (v->getParentFunctionOrMethod()) {
                 if (debugOutput) {
@@ -153,6 +154,36 @@ public:
                 }
                 return;
             }
+
+            detectInsertionPoint(sm, begin, end);
+        }
+    }
+
+    void detectInsertionPoint(SourceManager &sm, FullSourceLoc &begin, FullSourceLoc &end) {
+        if (insertionPointFound)return;
+
+        FullSourceLoc first = undeclaredIdentifiers.front()->location;
+
+        if (first.isBeforeInTranslationUnitThan(begin)) {
+            if (debugOutput) {
+                outs() << "  !! Insertion point found!\n";
+            }
+            insertionPointFound = true;
+            return;
+        }
+
+        insertionPoint = begin;
+        presumedInsertionPoint = sm.getPresumedLoc(begin, true);
+        if (debugOutput) {
+            outs() << "  Insertion point pushed to ";
+            outs() << begin.getSpellingLineNumber() << ":" << begin.getSpellingColumnNumber() << "\n";
+        }
+
+        if (first.isBeforeInTranslationUnitThan(end)) {
+            if (debugOutput) {
+                outs() << "  !! Insertion point found!\n";
+            }
+            insertionPointFound = true;
         }
     }
 
