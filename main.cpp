@@ -123,6 +123,9 @@ public:
 
             // Extract prototype from function using the pretty printer
             // and stopping at the first open curly brace "{"
+            if (f->isExternC()) {
+                rewriter.InsertTextAfter(insertionPoint, "extern \"C\" ");
+            }
             string proto;
             raw_string_ostream o(proto);
             f->print(o);
