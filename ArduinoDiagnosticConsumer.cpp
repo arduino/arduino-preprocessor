@@ -55,7 +55,7 @@ void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level,
         }
 
         unsigned id = info.getID();
-        if (id == 3441 /* use of undeclared identifier */) {
+        if (id == 3441 || id == 3442 /* use of undeclared identifier */) {
             // It seems that the only way to retrieve the undeclared symbol
             // is to print it as a localization string.
             const char *fmt = "%0";
