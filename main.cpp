@@ -241,7 +241,7 @@ public:
         const FileID mainFileID = rewriter.getSourceMgr().getMainFileID();
         const RewriteBuffer *buf = rewriter.getRewriteBufferFor(mainFileID);
         if (buf == nullptr) {
-            outs() << "No changes needed!\n";
+            errs() << "No changes needed!\n";
         } else {
             outs() << string(buf->begin(), buf->end());
         }
