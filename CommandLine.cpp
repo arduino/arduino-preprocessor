@@ -37,6 +37,7 @@ using namespace std;
 bool debugOutput;
 bool outputDiagnostics;
 bool outputOnlyNeededPrototypes;
+bool outputPreprocessedSketch = true;
 
 static cl::OptionCategory arduinoToolCategory("Arduino options");
 // TODO: add complete help
@@ -74,6 +75,8 @@ CommonOptionsParser doCommandLineParsing(int argc, const char **argv) {
     debugOutput = debugOutputOpt.getValue();
     outputOnlyNeededPrototypes = outputOnlyNeededPrototypesOpt.getValue();
     outputDiagnostics = outputDiagnosticsOpt.getValue();
-
+    if (outputDiagnostics) {
+        outputPreprocessedSketch = false;
+    }
     return optParser;
 }

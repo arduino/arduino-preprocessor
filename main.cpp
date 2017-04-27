@@ -241,6 +241,10 @@ public:
             outs() << out.str();
         }
 
+        if (!outputPreprocessedSketch) {
+            return;
+        }
+
         const FileID mainFileID = rewriter.getSourceMgr().getMainFileID();
         const RewriteBuffer *buf = rewriter.getRewriteBufferFor(mainFileID);
         if (buf == nullptr) {
