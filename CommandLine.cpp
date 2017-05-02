@@ -48,7 +48,7 @@ static cl::extrahelp arduinoHelp("\n"
 static cl::extrahelp commonHelp(CommonOptionsParser::HelpMessage);
 static cl::opt<bool> debugOutputOpt("debug");
 static cl::opt<bool> outputOnlyNeededPrototypesOpt("output-only-needed-prototypes");
-static cl::opt<bool> outputDiagnosticsOpt("diagnostics");
+static cl::opt<bool> outputDiagnosticsOpt("output-diagnostics");
 
 static void printVersion() {
     cout << "Arduino (https://www.arduino.cc/):\n";
