@@ -218,6 +218,8 @@ public:
     }
 };
 
+static string preprocessedSketch;
+
 class INOPreprocessAction : public ASTFrontendAction {
     MatchFinder finder;
     INOPreprocessorMatcherCallback funcDeclaredCB;
@@ -241,16 +243,14 @@ public:
             outs() << out.str();
         }
 
-        if (!outputPreprocessedSketch) {
-            return;
-        }
-
         const FileID mainFileID = rewriter.getSourceMgr().getMainFileID();
         const RewriteBuffer *buf = rewriter.getRewriteBufferFor(mainFileID);
         if (buf == nullptr) {
-            errs() << "No changes needed!\n";
+            // No changes needed, output the source file as-is
+            auto buff = rewriter.getSourceMgr().getBuffer(mainFileID);
+            preprocessedSketch = buff->getBuffer().str();
         } else {
-            outs() << string(buf->begin(), buf->end());
+            preprocessedSketch = string(buf->begin(), buf->end());
         }
     }
 };
@@ -267,5 +267,10 @@ int main(int argc, const char **argv) {
     tool.setDiagnosticConsumer(&dc);
 
     int res = tool.run(newFrontendActionFactory<INOPreprocessAction>().get());
+
+    if (outputPreprocessedSketch) {
+        cout << preprocessedSketch;
+    }
+
     return res;
 }
