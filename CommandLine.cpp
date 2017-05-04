@@ -29,15 +29,21 @@
 
 #include "CommandLine.hpp"
 #include "Config.hpp"
+#include "utils.hpp"
 
 #include <iostream>
-
-using namespace std;
+#include <sstream>
 
 bool debugOutput;
 bool outputDiagnostics;
 bool outputOnlyNeededPrototypes;
 bool outputPreprocessedSketch = true;
+
+// Code completion parameters
+bool outputCodeCompletions;
+string codeCompleteFilename;
+int codeCompleteLine;
+int codeCompleteCol;
 
 static cl::OptionCategory arduinoToolCategory("Arduino options");
 // TODO: add complete help
@@ -49,6 +55,7 @@ static cl::extrahelp commonHelp(CommonOptionsParser::HelpMessage);
 static cl::opt<bool> debugOutputOpt("debug");
 static cl::opt<bool> outputOnlyNeededPrototypesOpt("output-only-needed-prototypes");
 static cl::opt<bool> outputDiagnosticsOpt("output-diagnostics");
+static cl::opt<string> outputCodeCompletionsOpt("output-code-completions");
 
 static void printVersion() {
     cout << "Arduino (https://www.arduino.cc/):\n";
@@ -68,14 +75,39 @@ CommonOptionsParser doCommandLineParsing(int argc, const char **argv) {
     outputDiagnosticsOpt.setInitialValue(false);
     outputDiagnosticsOpt.setDescription("Output diagnostics (warnings/errors) in json format");
 
+    outputCodeCompletionsOpt.setCategory(arduinoToolCategory);
+    outputCodeCompletionsOpt.setInitialValue("");
+    outputCodeCompletionsOpt.setDescription(
+            "Output code completions (suggestions) in json format.\n"
+            "This option requires the cursor position in the format \"filename:line:col\"");
+
     cl::AddExtraVersionPrinter(printVersion);
 
     CommonOptionsParser optParser(argc, argv, arduinoToolCategory);
 
+    /* Parse outputCodeCompletion parameter */
+    if (outputCodeCompletionsOpt.getValue() != "") {
+        vector<string> spl = split(outputCodeCompletionsOpt.getValue(), ':');
+        if (spl.size() != 3) {
+            cerr << "code completion requires parameter in the form \"filename:line:col\"\n";
+            exit(1);
+        }
+        codeCompleteFilename = spl[0];
+        if (!stringToInt(spl[1], &codeCompleteLine)) {
+            cerr << "code completion requires 'line' to be a positive integer parameter in the form \"filename:line:col\"\n";
+            exit(1);
+        }
+        if (!stringToInt(spl[2], &codeCompleteCol)) {
+            cerr << "code completion requires 'col' to be a positive integer parameter in the form \"filename:line:col\"\n";
+            exit(1);
+        }
+        outputCodeCompletions = true;
+    }
+
     debugOutput = debugOutputOpt.getValue();
     outputOnlyNeededPrototypes = outputOnlyNeededPrototypesOpt.getValue();
     outputDiagnostics = outputDiagnosticsOpt.getValue();
-    if (outputDiagnostics) {
+    if (outputDiagnostics || outputCodeCompletions) {
         outputPreprocessedSketch = false;
     }
     return optParser;

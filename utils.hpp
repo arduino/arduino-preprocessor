@@ -29,23 +29,31 @@
 
 #pragma once
 
-#include <clang/Tooling/CommonOptionsParser.h>
-#include <clang/Tooling/Tooling.h>
+#include <vector>
+#include <sstream>
 
-using namespace clang;
-using namespace clang::tooling;
-using namespace llvm;
 using namespace std;
 
-extern bool debugOutput;
-extern bool outputOnlyNeededPrototypes;
-extern bool outputDiagnostics;
-extern bool outputPreprocessedSketch;
+vector<string> split(const string &in, const char sep) {
+    vector<string> res;
+    istringstream params(in);
+    string s;
+    while (getline(params, s, sep)) {
+        res.push_back(s);
+    }
+    return res;
+}
 
-// Code completion parameters
-extern bool outputCodeCompletions;
-extern string codeCompleteFilename;
-extern int codeCompleteLine;
-extern int codeCompleteCol;
-
-CommonOptionsParser doCommandLineParsing(int argc, const char **argv);
+bool stringToInt(const string &in, int *out) {
+    stringstream ss(in);
+    ss >> *out;
+    if (!ss.fail()) {
+        return true;
+    }
+    // Tolerate trailing white space
+    ss >> ws;
+    if (ss.eof()) {
+        return true;
+    }
+    return false;
+}
