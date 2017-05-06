@@ -57,3 +57,8 @@ inline bool stringToInt(const string &in, int *out) {
     }
     return false;
 }
+
+inline bool startsWith(const string &in, const string &prefix) {
+    int l = prefix.length();
+    return in.find(prefix.c_str(), 0, l) == 0;
+}
