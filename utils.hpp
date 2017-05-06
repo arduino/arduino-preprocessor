@@ -34,7 +34,7 @@
 
 using namespace std;
 
-vector<string> split(const string &in, const char sep) {
+inline vector<string> split(const string &in, const char sep) {
     vector<string> res;
     istringstream params(in);
     string s;
@@ -44,7 +44,7 @@ vector<string> split(const string &in, const char sep) {
     return res;
 }
 
-bool stringToInt(const string &in, int *out) {
+inline bool stringToInt(const string &in, int *out) {
     stringstream ss(in);
     ss >> *out;
     if (!ss.fail()) {
