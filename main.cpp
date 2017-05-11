@@ -46,9 +46,11 @@
 #include <list>
 
 #include "ArduinoDiagnosticConsumer.hpp"
-#include "Config.hpp"
 #include "CommandLine.hpp"
+#include "Config.hpp"
+#include "CodeCompletion.hpp"
 #include "IdentifiersList.hpp"
+#include "utils.hpp"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -270,6 +272,13 @@ int main(int argc, const char **argv) {
 
     if (outputPreprocessedSketch) {
         cout << preprocessedSketch;
+    }
+
+    if (outputCodeCompletions) {
+        int line = FindRealLineForCodeCompletion(preprocessedSketch, codeCompleteFilename, codeCompleteLine);
+        if (line != -1) {
+            DoCodeCompletion(optParser.getSourcePathList()[0], preprocessedSketch, line, codeCompleteCol);
+        }
     }
 
     return res;
