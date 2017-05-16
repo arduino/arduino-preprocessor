@@ -39,8 +39,10 @@
 
 #include <iostream>
 
+#include "CodeCompletion.hpp"
 #include "CommandLine.hpp"
 #include "utils.hpp"
+#include "JsonImpl.hpp"
 
 using namespace clang;
 using namespace llvm;
@@ -48,14 +50,22 @@ using namespace std;
 
 class CustomCodeCompleteConsumer : public CodeCompleteConsumer {
     CodeCompletionTUInfo TUInfo;
+    json output;
 
 public:
 
     CustomCodeCompleteConsumer(const CodeCompleteOptions &opts) : CodeCompleteConsumer(opts, false),
-    TUInfo(std::make_shared<GlobalCodeCompletionAllocator>()) {
+    TUInfo(std::make_shared<GlobalCodeCompletionAllocator>()), output(json::array()) {
     }
 
     void ProcessCodeCompleteResults(Sema &s, CodeCompletionContext ctx, CodeCompletionResult *res, unsigned n) override {
+        for (unsigned i = 0; i != n; ++i) {
+            string ccStr = "";
+            raw_string_ostream OS(ccStr);
+            CodeCompletionString *ccs = res[i].CreateCodeCompletionString(s, ctx, getAllocator(), TUInfo, includeBriefComments());
+            //cout << encode(res[i], ccs).dump(2) << "\n";
+            output.push_back(encode(res[i], ccs));
+        }
 
     }
 
@@ -70,6 +80,10 @@ public:
 
     virtual CodeCompletionTUInfo &getCodeCompletionTUInfo() override {
         return TUInfo;
+    }
+
+    json *GetJSON() {
+        return &output;
     }
 };
 
@@ -130,7 +144,8 @@ void DoCodeCompletion(const string &filename, const string &code, int line, int 
     ccOpts.IncludeCodePatterns = 1;
     ccOpts.IncludeGlobals = 1;
     ccOpts.IncludeBriefComments = 1;
-    ci.setCodeCompletionConsumer(new CustomCodeCompleteConsumer(ccOpts));
+    CustomCodeCompleteConsumer *ccConsumer = new CustomCodeCompleteConsumer(ccOpts);
+    ci.setCodeCompletionConsumer(ccConsumer);
 
     FrontendOptions& fOpts = ci.getFrontendOpts();
     fOpts.Inputs.push_back(FrontendInputFile(filename, InputKind::IK_CXX));
@@ -149,4 +164,6 @@ void DoCodeCompletion(const string &filename, const string &code, int line, int 
         action.Execute();
         action.EndSourceFile();
     }
+
+    cout << ccConsumer->GetJSON()->dump();
 }

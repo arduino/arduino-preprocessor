@@ -38,6 +38,7 @@ using namespace std;
 
 #define JSON_NOEXCEPTION
 #include "json.hpp"
+#include "clang/include/clang/Sema/CodeCompleteConsumer.h"
 using json = nlohmann::json;
 
 template<unsigned InternalLen>
@@ -78,4 +79,153 @@ inline json encode(const SourceManager &sm, const ArrayRef<T> &array) {
         res.push_back(encode(sm, elem));
     }
     return res;
+}
+
+inline json encode(const CodeCompletionString *ccs) {
+    json chunks = json::array();
+    for (const CodeCompletionString::Chunk &c : *ccs) {
+        switch (c.Kind) {
+            case CodeCompletionString::ChunkKind::CK_Colon:
+                chunks.push_back(json{
+                    {"t", ":"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Comma:
+                chunks.push_back(json{
+                    {"t", ","}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_CurrentParameter:
+                chunks.push_back(json{
+                    {"current_param", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Equal:
+                chunks.push_back(json{
+                    {"t", "="}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_HorizontalSpace:
+                chunks.push_back(json{
+                    {"t", " "}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Informative:
+                chunks.push_back(json{
+                    {"info", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_LeftAngle:
+                chunks.push_back(json{
+                    {"t", "<"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_LeftBrace:
+                chunks.push_back(json{
+                    {"t", "{"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_LeftBracket:
+                chunks.push_back(json{
+                    {"t", "["}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_LeftParen:
+                chunks.push_back(json{
+                    {"t", "("}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Optional:
+                chunks.push_back(json{
+                    {"optional", encode(c.Optional)}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Placeholder:
+                chunks.push_back(json{
+                    {"placeholder", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_ResultType:
+                chunks.push_back(json{
+                    {"res", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_RightAngle:
+                chunks.push_back(json{
+                    {"t", ">"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_RightBrace:
+                chunks.push_back(json{
+                    {"t", "}"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_RightBracket:
+                chunks.push_back(json{
+                    {"t", "]"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_RightParen:
+                chunks.push_back(json{
+                    {"t", ")"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_SemiColon:
+                chunks.push_back(json{
+                    {"t", ";"}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_Text:
+                chunks.push_back(json{
+                    {"t", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_TypedText:
+                chunks.push_back(json{
+                    {"typedtext", c.Text}
+                });
+                break;
+            case CodeCompletionString::ChunkKind::CK_VerticalSpace:
+                chunks.push_back(json{
+                    {"t", "\n"}
+                });
+                break;
+        };
+    }
+
+    json res = json::object();
+    res["chunks"] = chunks;
+    // This seems to be redundant
+    //if (ccs->getTypedText()) {
+    //    res["typedtext"] = ccs->getTypedText();
+    //}
+    if (ccs->getBriefComment()) {
+        res["brief"] = ccs->getBriefComment();
+    }
+    return res;
+}
+
+inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *ccs) {
+    // TODO: To obtain the complete documentation comment we must
+    // explore cc.Declaration AST
+    //cc.Declaration->dump();
+
+    string type;
+    switch (cc.Kind) {
+        case CodeCompletionResult::RK_Declaration:
+            type = "declaration";
+            break;
+        case CodeCompletionResult::RK_Keyword:
+            type = "keyword";
+            break;
+        case CodeCompletionResult::RK_Pattern:
+            type = "pattern";
+            break;
+        case CodeCompletionResult::RK_Macro:
+            type = "macro";
+            break;
+    };
+    return json{
+        {"type", type},
+        {"completion", encode(ccs)}};
 }
