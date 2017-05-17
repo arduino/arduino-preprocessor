@@ -219,7 +219,7 @@ inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *c
             SourceLocation loc = cc.Declaration->getLocation();
             PresumedLoc presumedLoc = sm.getPresumedLoc(loc);
             res["location"] = presumedLoc.getFilename();
-            res["type"] = "Declaration";
+            res["type"] = cc.Declaration->getDeclKindName();
             break;
         }
         case CodeCompletionResult::RK_Keyword:
