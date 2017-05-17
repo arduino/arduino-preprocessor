@@ -205,27 +205,38 @@ inline json encode(const CodeCompletionString *ccs) {
     return res;
 }
 
-inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *ccs) {
+inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *ccs, const SourceManager &sm) {
     // TODO: To obtain the complete documentation comment we must
     // explore cc.Declaration AST
     //cc.Declaration->dump();
 
-    string type;
+    json res = json{
+        {"completion", encode(ccs)}
+    };
     switch (cc.Kind) {
         case CodeCompletionResult::RK_Declaration:
-            type = "declaration";
+        {
+            SourceLocation loc = cc.Declaration->getLocation();
+            PresumedLoc presumedLoc = sm.getPresumedLoc(loc);
+            res["location"] = presumedLoc.getFilename();
+            res["type"] = "Declaration";
             break;
+        }
         case CodeCompletionResult::RK_Keyword:
-            type = "keyword";
+        {
+            res["type"] = "Keyword";
             break;
+        }
         case CodeCompletionResult::RK_Pattern:
-            type = "pattern";
+        {
+            res["type"] = "Pattern";
             break;
+        }
         case CodeCompletionResult::RK_Macro:
-            type = "macro";
+        {
+            res["type"] = "Macro";
             break;
+        }
     };
-    return json{
-        {"type", type},
-        {"completion", encode(ccs)}};
+    return res;
 }

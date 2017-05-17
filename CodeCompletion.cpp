@@ -51,11 +51,12 @@ using namespace std;
 class CustomCodeCompleteConsumer : public CodeCompleteConsumer {
     CodeCompletionTUInfo TUInfo;
     json output;
+    SourceManager &sm;
 
 public:
 
-    CustomCodeCompleteConsumer(const CodeCompleteOptions &opts) : CodeCompleteConsumer(opts, false),
-    TUInfo(std::make_shared<GlobalCodeCompletionAllocator>()), output(json::array()) {
+    CustomCodeCompleteConsumer(const CodeCompleteOptions &opts, SourceManager &sm) : CodeCompleteConsumer(opts, false),
+    TUInfo(std::make_shared<GlobalCodeCompletionAllocator>()), output(json::array()), sm(sm) {
     }
 
     void ProcessCodeCompleteResults(Sema &s, CodeCompletionContext ctx, CodeCompletionResult *res, unsigned n) override {
@@ -64,7 +65,7 @@ public:
             raw_string_ostream OS(ccStr);
             CodeCompletionString *ccs = res[i].CreateCodeCompletionString(s, ctx, getAllocator(), TUInfo, includeBriefComments());
             //cout << encode(res[i], ccs).dump(2) << "\n";
-            output.push_back(encode(res[i], ccs));
+            output.push_back(encode(res[i], ccs, sm));
         }
 
     }
@@ -139,12 +140,15 @@ void DoCodeCompletion(const string &filename, const string &code, int line, int 
     lOpts.Bool = true;
     lOpts.GNUMode = true;
 
+    ci.createFileManager();
+    ci.createSourceManager(ci.getFileManager());
+
     CodeCompleteOptions ccOpts;
     ccOpts.IncludeMacros = 1;
     ccOpts.IncludeCodePatterns = 1;
     ccOpts.IncludeGlobals = 1;
     ccOpts.IncludeBriefComments = 1;
-    CustomCodeCompleteConsumer *ccConsumer = new CustomCodeCompleteConsumer(ccOpts);
+    CustomCodeCompleteConsumer *ccConsumer = new CustomCodeCompleteConsumer(ccOpts, ci.getSourceManager());
     ci.setCodeCompletionConsumer(ccConsumer);
 
     FrontendOptions& fOpts = ci.getFrontendOpts();
