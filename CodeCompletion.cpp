@@ -89,8 +89,8 @@ public:
 };
 
 int FindRealLineForCodeCompletion(string &code, string &filename, int line) {
-    int curr = 0;
-    int real = 0;
+    int curr = 1;
+    int real = 1;
     bool inFile = false;
     for (string &l : split(code, '\n')) {
         real++;
