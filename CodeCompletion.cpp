@@ -61,6 +61,12 @@ public:
 
     void ProcessCodeCompleteResults(Sema &s, CodeCompletionContext ctx, CodeCompletionResult *res, unsigned n) override {
         for (unsigned i = 0; i != n; ++i) {
+            CXAvailabilityKind avail = res[i].Availability;
+            if (avail != CXAvailabilityKind::CXAvailability_Available && avail != CXAvailabilityKind::CXAvailability_Deprecated) {
+                // Skip definitions that are not usable
+                continue;
+            }
+
             string ccStr = "";
             raw_string_ostream OS(ccStr);
             CodeCompletionString *ccs = res[i].CreateCodeCompletionString(s, ctx, getAllocator(), TUInfo, includeBriefComments());
