@@ -206,13 +206,17 @@ inline json encode(const CodeCompletionString *ccs) {
 }
 
 inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *ccs, const SourceManager &sm) {
-    // TODO: To obtain the complete documentation comment we must
-    // explore cc.Declaration AST
-    //cc.Declaration->dump();
-
     json res = json{
         {"completion", encode(ccs)}
     };
+
+    // Extract doxygen comment if available
+    ASTContext& ast = cc.Declaration->getASTContext();
+    RawComment* comment = ast.getRawCommentForDeclNoCache(cc.Declaration);
+    if (comment) {
+        res["doxy"] = comment->getRawText(sm).str();
+    }
+
     switch (cc.Kind) {
         case CodeCompletionResult::RK_Declaration:
         {
