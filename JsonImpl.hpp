@@ -224,6 +224,19 @@ inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *c
             PresumedLoc presumedLoc = sm.getPresumedLoc(loc);
             res["location"] = presumedLoc.getFilename();
             res["type"] = cc.Declaration->getDeclKindName();
+
+            // For each parameter extract type and name
+            if (const FunctionDecl * d = dyn_cast<FunctionDecl>(cc.Declaration)) {
+                json p = json::array();
+                ArrayRef<ParmVarDecl*> params = d->parameters();
+                for (size_t i = 0; i < params.size(); i++) {
+                    p.push_back(json{
+                        {"type", params[i]->getType().getAsString()},
+                        {"name", params[i]->getNameAsString()},
+                    });
+                }
+                res["parameters"] = p;
+            }
             break;
         }
         case CodeCompletionResult::RK_Keyword:
