@@ -70,7 +70,7 @@ public:
             string ccStr = "";
             raw_string_ostream OS(ccStr);
             CodeCompletionString *ccs = res[i].CreateCodeCompletionString(s, ctx, getAllocator(), TUInfo, includeBriefComments());
-            //cout << encode(res[i], ccs).dump(2) << "\n";
+            //cout << encode(res[i], ccs, sm).dump(2) << "\n";
             output.push_back(encode(res[i], ccs, sm));
         }
 
