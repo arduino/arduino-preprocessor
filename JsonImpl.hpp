@@ -210,12 +210,15 @@ inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *c
         {"completion", encode(ccs)}
     };
 
+/* XXX: This makes a memory corruption and core-dumps (at least on Windows), something to check...
+
     // Extract doxygen comment if available
     ASTContext& ast = cc.Declaration->getASTContext();
     RawComment* comment = ast.getRawCommentForDeclNoCache(cc.Declaration);
     if (comment) {
         res["doxy"] = comment->getRawText(sm).str();
     }
+*/
 
     switch (cc.Kind) {
         case CodeCompletionResult::RK_Declaration:
