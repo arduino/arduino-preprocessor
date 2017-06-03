@@ -72,18 +72,23 @@ if [[ $OS == "GNU/Linux" ]] ; then
     echo Linux Machine not supported: $MACHINE
     exit 1
   fi
+  CXXFLAGS=""
+  CXX=clang/bin/clang++
 
-#elif [[ $OS == "Msys" || $OS == "Cygwin" ]] ; then
-#
-#  export PATH=$PATH:/c/MinGW/bin/:/c/cygwin/bin/
-#  export CC="mingw32-gcc -m32"
-#  export CXX="mingw32-g++ -m32"
-#  export CFLAGS="-DWIN32 -D__USE_MINGW_ACCESS"
-#  export CXXFLAGS="-DWIN32"
-#  export LDFLAGS="-DWIN32"
-#  export MAKE_JOBS=1
-#  OUTPUT_TAG=i686-mingw32
-#
+elif [[ $OS == "Msys" || $OS == "Cygwin" ]] ; then
+
+  OUTPUT_TAG=i686-pc-cygwin
+  CXXFLAGS="-Wno-strict-aliasing"
+  CXX=g++
+
+  # This is a workaround for building with clang.exe (keeping here, just in case...)
+  #GCC_VER=$(ls /usr/lib/gcc/$OUTPUT_TAG/)
+  #GCC_INCLUDE="/usr/lib/gcc/$OUTPUT_TAG/$GCC_VER/include"
+  #mkdir -p include/bits
+  #cp $GCC_INCLUDE/c++/$OUTPUT_TAG/bits/c++config.h include/bits
+  #sed -i "s/^#define _GLIBCXX_USE_FLOAT128 1$/\/\/#define _GLIBCXX_USE_FLOAT128 1/" include/bits/c++config.h
+  #CXXFLAGS="-Iinclude -I$GCC_INCLUDE/c++ -I$GCC_INCLUDE/c++/$OUTPUT_TAG -I$GCC_INCLUDE/c++/backward -I$GCC_INCLUDE"
+
 #elif [[ $OS == "Darwin" ]] ; then
 #
 #  export PATH=/opt/local/libexec/gnubin/:/opt/local/bin:$PATH
@@ -103,8 +108,7 @@ fi
 # --------------------------
 #
 
-CXX=clang/bin/clang++
-CXXFLAGS=`clang/bin/llvm-config --cxxflags`
+CXXFLAGS="`clang/bin/llvm-config --cxxflags` $CXXFLAGS"
 LDFLAGS=`clang/bin/llvm-config --ldflags`
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
