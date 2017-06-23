@@ -108,7 +108,7 @@ fi
 #
 
 CXXFLAGS="`clang/bin/llvm-config --cxxflags` $CXXFLAGS"
-LDFLAGS=`clang/bin/llvm-config --ldflags`
+LDFLAGS="`clang/bin/llvm-config --ldflags` -static-libstdc++"
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
 SOURCES="main.cpp ArduinoDiagnosticConsumer.cpp CommandLine.cpp IdentifiersList.cpp CodeCompletion.cpp"
