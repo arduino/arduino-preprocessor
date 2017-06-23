@@ -40,7 +40,7 @@ function fetch_llvm {
   wget -N "$1.sig"
   fetched=`basename $1`
   keyfile=$(mktemp --suffix=.gpg)
-  gpg2 --yes -o "$keyfile" --dearmor "hans-gpg-key.asc"
+  gpg2 --yes -o "$keyfile" --dearmor "arduino_sources_gpg_pubkey.asc"
   gpg2 --status-fd 1 --no-default-keyring --keyring "$keyfile" --trust-model always --verify "$fetched.sig"
   rm "$keyfile"
 
@@ -61,7 +61,7 @@ if [[ $OS == "GNU/Linux" ]] ; then
 
   export MACHINE=`uname -m`
   if [[ $MACHINE == "x86_64" ]] ; then
-    #fetch_llvm http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+    fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-ubuntu-14.04.5-x86_64.tar.xz
     OUTPUT_TAG=x86_64-pc-linux-gnu
 #  elif [[ $MACHINE == "i686" ]] ; then
 #    OUTPUT_TAG=i686-pc-linux-gnu
