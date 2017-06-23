@@ -36,9 +36,13 @@ export OS=`uname -o || uname`
 export TARGET_OS=$OS
 
 function fetch_llvm {
-  wget -N "$1"
-  wget -N "$1.sig"
   fetched=`basename $1`
+  if [ ! -f "$fetched" ]; then
+    wget "$1"
+  fi
+  if [ ! -f "$fetched.asc" ]; then
+    wget "$1.asc"
+  fi
   keyfile=$(mktemp --suffix=.gpg)
   gpg2 --yes -o "$keyfile" --dearmor "arduino_sources_gpg_pubkey.asc"
   gpg2 --status-fd 1 --no-default-keyring --keyring "$keyfile" --trust-model always --verify "$fetched.sig"
