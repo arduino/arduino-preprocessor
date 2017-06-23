@@ -45,7 +45,7 @@ function fetch_llvm {
   fi
   keyfile=$(mktemp --suffix=.gpg)
   gpg2 --yes -o "$keyfile" --dearmor "arduino_sources_gpg_pubkey.asc"
-  gpg2 --status-fd 1 --no-default-keyring --keyring "$keyfile" --trust-model always --verify "$fetched.sig"
+  gpg2 --status-fd 1 --no-default-keyring --keyring "$keyfile" --trust-model always --verify "$fetched.asc"
   rm "$keyfile"
 
   rm -rf clang
