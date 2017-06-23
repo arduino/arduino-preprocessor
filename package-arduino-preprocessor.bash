@@ -15,8 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# TODO: Fetch this from somewhere in the source code
-ARDUINO_PREPROCESSOR_VERSION=0.0.1
+ARDUINO_PREPROCESSOR_VERSION=`cat Config.hpp | grep VERSION | sed 's/[^"]*"\([^"]*\)".*/\1/'`
 
 OUTPUT_VERSION=${ARDUINO_PREPROCESSOR_VERSION}
 
