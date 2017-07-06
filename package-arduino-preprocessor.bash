@@ -43,10 +43,7 @@ function fetch_llvm {
   if [ ! -f "$fetched.asc" ]; then
     wget "$1.asc"
   fi
-  keyfile=$(mktemp --suffix=.gpg)
-  gpg2 --yes -o "$keyfile" --dearmor "arduino_sources_gpg_pubkey.asc"
-  gpg2 --status-fd 1 --no-default-keyring --keyring "$keyfile" --trust-model always --verify "$fetched.asc"
-  rm "$keyfile"
+  gpg2 --status-fd 1 --no-default-keyring --homedir . --keyring "arduino_sources_gpg_pubkey.key" --trust-model always --verify "$fetched.asc"
 
   rm -rf clang
   mkdir clang
