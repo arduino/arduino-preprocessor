@@ -80,6 +80,7 @@ if [[ $OS == "GNU/Linux" ]] ; then
 
 elif [[ $OS == "Msys" || $OS == "Cygwin" ]] ; then
 
+  fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-cygwin-i686.tar.xz
   OUTPUT_TAG=i686-pc-cygwin
   CXXFLAGS="-Wno-strict-aliasing"
   CXX=g++
