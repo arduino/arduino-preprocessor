@@ -37,7 +37,6 @@ export TARGET_OS=$OS
 
 START_GROUP=--Wl,--start-group
 END_GROUP=--Wl,--end-group
-EXTRA_LDFLAGS=-static-libstdc++
 
 function fetch_llvm {
   fetched=`basename $1`
@@ -73,8 +72,6 @@ if [[ $OS == "GNU/Linux" ]] ; then
     fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-ubuntu-14.04.5-i686.tar.xz
   elif [[ $MACHINE == "armv7l" ]] ; then
     OUTPUT_TAG=armhf-pc-linux-gnu
-    #arm builds usually don't ship static libstdc++
-    EXTRA_LDFLAGS=""
     fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-linux-arm.tar.xz
   else
     echo Linux Machine not supported: $MACHINE
@@ -122,7 +119,7 @@ fi
 #
 
 CXXFLAGS="`clang/bin/llvm-config --cxxflags` $CXXFLAGS"
-LDFLAGS="`clang/bin/llvm-config --ldflags` $EXTRA_LDFLAGS"
+LDFLAGS="`clang/bin/llvm-config --ldflags` -static-libstdc++"
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
 SOURCES="main.cpp ArduinoDiagnosticConsumer.cpp CommandLine.cpp IdentifiersList.cpp CodeCompletion.cpp"
