@@ -35,6 +35,10 @@ mkdir objdir
 export OS=`uname -o || uname`
 export TARGET_OS=$OS
 
+START_GROUP=--Wl,--start-group
+END_GROUP=--Wl,--end-group
+EXTRA_LDFLAGS=-static-libstdc++
+
 function fetch_llvm {
   fetched=`basename $1`
   if [ ! -f "$fetched" ]; then
@@ -64,10 +68,14 @@ if [[ $OS == "GNU/Linux" ]] ; then
   if [[ $MACHINE == "x86_64" ]] ; then
     fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-ubuntu-14.04.5-x86_64.tar.xz
     OUTPUT_TAG=x86_64-pc-linux-gnu
-#  elif [[ $MACHINE == "i686" ]] ; then
-#    OUTPUT_TAG=i686-pc-linux-gnu
-#  elif [[ $MACHINE == "armv7l" ]] ; then
-#    OUTPUT_TAG=armhf-pc-linux-gnu
+  elif [[ $MACHINE == "i686" ]] ; then
+    OUTPUT_TAG=i686-pc-linux-gnu
+    fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-ubuntu-14.04.5-i686.tar.xz
+  elif [[ $MACHINE == "armv7l" ]] ; then
+    OUTPUT_TAG=armhf-pc-linux-gnu
+    #arm builds usually don't ship static libstdc++
+    EXTRA_LDFLAGS=""
+    fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-linux-arm.tar.xz
   else
     echo Linux Machine not supported: $MACHINE
     exit 1
@@ -90,12 +98,16 @@ elif [[ $OS == "Msys" || $OS == "Cygwin" ]] ; then
   #sed -i "s/^#define _GLIBCXX_USE_FLOAT128 1$/\/\/#define _GLIBCXX_USE_FLOAT128 1/" include/bits/c++config.h
   #CXXFLAGS="-Iinclude -I$GCC_INCLUDE/c++ -I$GCC_INCLUDE/c++/$OUTPUT_TAG -I$GCC_INCLUDE/c++/backward -I$GCC_INCLUDE"
 
-#elif [[ $OS == "Darwin" ]] ; then
-#
-#  export PATH=/opt/local/libexec/gnubin/:/opt/local/bin:$PATH
-#  export CC="gcc -arch i386 -mmacosx-version-min=10.5"
-#  export CXX="g++ -arch i386 -mmacosx-version-min=10.5"
-#  OUTPUT_TAG=i386-apple-darwin11
+elif [[ $OS == "Darwin" ]] ; then
+
+  #export PATH=/opt/local/libexec/gnubin/:/opt/local/bin:$PATH
+  export CC="gcc -arch x86_64 -mmacosx-version-min=10.9"
+  export CXX="g++ -arch x86_64 -mmacosx-version-min=10.9"
+  OUTPUT_TAG=x86_64-apple-darwin11
+  export CXXFLAGS="-stdlib=libc++ -std=c++11"
+  fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-macosx-10.9-x86_64.tar.bz2
+  START_GROUP=""
+  END_GROUP=""
 
 else
 
@@ -110,11 +122,11 @@ fi
 #
 
 CXXFLAGS="`clang/bin/llvm-config --cxxflags` $CXXFLAGS"
-LDFLAGS="`clang/bin/llvm-config --ldflags` -static-libstdc++"
+LDFLAGS="`clang/bin/llvm-config --ldflags` $EXTRA_LDFLAGS"
 LLVMLIBS=`clang/bin/llvm-config --libs --system-libs`
 CLANGLIBS=`ls clang/lib/libclang*.a | sed s/.*libclang/-lclang/ | sed s/.a$//`
 SOURCES="main.cpp ArduinoDiagnosticConsumer.cpp CommandLine.cpp IdentifiersList.cpp CodeCompletion.cpp"
-$CXX $SOURCES -o objdir/arduino-preprocessor $CXXFLAGS $LDFLAGS -Wl,--start-group $LLVMLIBS $CLANGLIBS -Wl,--end-group
+$CXX $SOURCES -o objdir/arduino-preprocessor $CXXFLAGS $LDFLAGS $START_GROUP $LLVMLIBS $CLANGLIBS $END_GROUP
 strip objdir/*
 
 rm -f arduino-preprocessor-${OUTPUT_VERSION}-${OUTPUT_TAG}.tar.bz2
