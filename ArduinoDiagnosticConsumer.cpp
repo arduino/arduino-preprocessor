@@ -32,6 +32,7 @@
 #include "ArduinoDiagnosticConsumer.hpp"
 #include "CommandLine.hpp"
 #include "JsonImpl.hpp"
+#include "utils.hpp"
 
 using namespace clang;
 
@@ -54,6 +55,13 @@ void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level,
         if (debugOutput) {
             outs() << sm.getSpellingLineNumber(sl) << ":" << sm.getSpellingColumnNumber(sl) << " (";
             outs() << presumedFilename << ") ";
+        }
+
+        if (!cStrEndsWith(presumedFilename, ".ino")) {
+            if (debugOutput) {
+                outs() << "Ignoring non .ino source file\n";
+            }
+            return;
         }
 
         unsigned id = info.getID();

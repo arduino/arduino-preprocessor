@@ -62,3 +62,16 @@ inline bool startsWith(const string &in, const string &prefix) {
     int l = prefix.length();
     return in.find(prefix.c_str(), 0, l) == 0;
 }
+
+inline bool cStrEndsWith(const char *str, const char *suffix) {
+  if (str == NULL || suffix == NULL)
+    return false;
+
+  size_t strLen = strlen(str);
+  size_t suffixLen = strlen(suffix);
+
+  if (suffixLen > strLen)
+    return false;
+
+  return strncmp(str + strLen - suffixLen, suffix, suffixLen) == 0;
+}
