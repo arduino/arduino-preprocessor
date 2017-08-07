@@ -142,6 +142,13 @@ public:
 
         const VarDecl *v = match.Nodes.getNodeAs<VarDecl>("var_decl");
         if (v) {
+            if (v->getParentFunctionOrMethod()) {
+                //if (debugOutput) {
+                //    outs() << "  Variable is not top level, ignoring.\n";
+                //}
+                return;
+            }
+
             FullSourceLoc loc = ctx->getFullLoc(v->getLocStart());
             SourceRange r = v->getSourceRange();
             FullSourceLoc begin = ctx->getFullLoc(r.getBegin());
@@ -152,12 +159,6 @@ public:
                 outs() << loc.getSpellingLineNumber() << ":" << loc.getSpellingColumnNumber();
                 outs() << " (range " << begin.getSpellingLineNumber() << ":" << begin.getSpellingColumnNumber();
                 outs() << " to " << end.getSpellingLineNumber() << ":" << end.getSpellingColumnNumber() << ")\n";
-            }
-            if (v->getParentFunctionOrMethod()) {
-                if (debugOutput) {
-                    outs() << "  Variable is not top level, ignoring.\n";
-                }
-                return;
             }
 
             detectInsertionPoint(sm, begin, end);
