@@ -50,8 +50,10 @@ void ArduinoDiagnosticConsumer::HandleDiagnostic(DiagnosticsEngine::Level level,
         const SourceManager &sm = info.getSourceManager();
         const SourceLocation &loc = info.getLocation();
         const SourceLocation &sl = sm.getSpellingLoc(loc);
+        const char *presumedFilename = sm.getPresumedLoc(sl).getFilename();
         if (debugOutput) {
-            outs() << sm.getSpellingLineNumber(sl) << ":" << sm.getSpellingColumnNumber(sl) << " ";
+            outs() << sm.getSpellingLineNumber(sl) << ":" << sm.getSpellingColumnNumber(sl) << " (";
+            outs() << presumedFilename << ") ";
         }
 
         unsigned id = info.getID();
