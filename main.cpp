@@ -97,6 +97,12 @@ public:
                 outs() << " to " << end.getSpellingLineNumber() << ":" << end.getSpellingColumnNumber() << ")\n";
             }
 
+            if (dyn_cast<CXXMethodDecl>(f)) {
+                if (debugOutput) {
+                    outs() << "  Ignored CXX method declaration.\n";
+                }
+            }
+
             if (f->getParentFunctionOrMethod()) {
                 if (debugOutput) {
                     outs() << "  Function is not top level, ignoring.\n";
