@@ -104,6 +104,13 @@ public:
                 return;
             }
 
+            if (dyn_cast<CXXConstructorDecl>(f)) {
+                if (debugOutput) {
+                    outs() << "  Ignored CXX constructor declaration.\n";
+                }
+                return;
+            }
+
             if (f->getParentFunctionOrMethod()) {
                 if (debugOutput) {
                     outs() << "  Function is not top level, ignoring.\n";
