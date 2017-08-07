@@ -118,6 +118,8 @@ public:
                 return;
             }
 
+            //f->dump();
+
             detectInsertionPoint(sm, begin, end);
             if (!insertionPointFound) {
                 return;
