@@ -101,6 +101,7 @@ public:
                 if (debugOutput) {
                     outs() << "  Ignored CXX method declaration.\n";
                 }
+                return;
             }
 
             if (f->getParentFunctionOrMethod()) {
