@@ -35,8 +35,8 @@ mkdir objdir
 export OS=`uname -o || uname`
 export TARGET_OS=$OS
 
-START_GROUP=--Wl,--start-group
-END_GROUP=--Wl,--end-group
+START_GROUP=-Wl,--start-group
+END_GROUP=-Wl,--end-group
 
 function fetch_llvm {
   fetched=`basename $1`
