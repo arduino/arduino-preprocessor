@@ -128,5 +128,10 @@ strip objdir/*
 
 rm -f arduino-preprocessor-${OUTPUT_VERSION}-${OUTPUT_TAG}.tar.bz2
 mv objdir arduino-preprocessor
+
+if [[ $OS == "Cygwin" ]] ; then
+cp cygwin-prebuilt/* arduino-preprocessor
+fi
+
 tar -cjvf arduino-preprocessor-${OUTPUT_VERSION}-${OUTPUT_TAG}.tar.bz2 arduino-preprocessor
 
