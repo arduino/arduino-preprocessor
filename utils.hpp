@@ -75,3 +75,22 @@ inline bool cStrEndsWith(const char *str, const char *suffix) {
 
   return strncmp(str + strLen - suffixLen, suffix, suffixLen) == 0;
 }
+
+#ifdef WIN32
+inline bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+inline std::string quoteCppString(std::string& str) {
+    replace(str, "\\", "\\\\");
+    return str;
+}
+#else
+inline std::string quoteCppString(std::string& str) {
+    return str;
+}
+#endif

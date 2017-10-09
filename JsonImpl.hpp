@@ -38,6 +38,7 @@ using namespace std;
 
 #define JSON_NOEXCEPTION
 #include "json.hpp"
+#include "utils.hpp"
 #include "clang/include/clang/Sema/CodeCompleteConsumer.h"
 using json = nlohmann::json;
 
@@ -50,8 +51,10 @@ inline json encode(const SourceManager &sm, const SourceLocation &loc) {
     PresumedLoc presumed = sm.getPresumedLoc(loc);
     stringstream pos;
     pos << presumed.getLine() << ":" << presumed.getColumn();
+    std::string filename(presumed.getFilename());
+    filename = quoteCppString(filename);
     return json{
-        {"file", presumed.getFilename()},
+        {"file", filename.c_str()},
         {"pos", pos.str()}};
 }
 
@@ -225,7 +228,9 @@ inline json encode(const CodeCompletionResult &cc, const CodeCompletionString *c
         {
             SourceLocation loc = cc.Declaration->getLocation();
             PresumedLoc presumedLoc = sm.getPresumedLoc(loc);
-            res["location"] = presumedLoc.getFilename();
+            std::string filename(presumedLoc.getFilename());
+            filename = quoteCppString(filename);
+            res["location"] = filename.c_str();
             res["type"] = cc.Declaration->getDeclKindName();
 
             // For each parameter extract type and name

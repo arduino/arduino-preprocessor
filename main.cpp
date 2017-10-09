@@ -233,7 +233,9 @@ public:
         ostringstream lineInfo;
         lineInfo << "#line " << presumed.getLine();
         lineInfo << " \"" << presumed.getFilename() << "\"\n";
-        rewriter.InsertTextAfter(insertionPoint, lineInfo.str());
+        std::string lineInfoAsStr = lineInfo.str();
+        lineInfoAsStr = quoteCppString(lineInfoAsStr);
+        rewriter.InsertTextAfter(insertionPoint, lineInfoAsStr);
     }
 };
 
