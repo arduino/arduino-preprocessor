@@ -197,10 +197,7 @@ public:
 
         FullSourceLoc first = undeclaredIdentifiers.back()->location;
         if (first.isBeforeInTranslationUnitThan(begin)) {
-            if (debugOutput) {
-                outs() << "  !! Insertion point found!\n";
-            }
-            insertionPointFound = true;
+            markInsertionPointAsFound();
             return;
         }
 
@@ -216,10 +213,22 @@ public:
         }
 
         if (first.isBeforeInTranslationUnitThan(end)) {
+            markInsertionPointAsFound();
+        }
+    }
+
+    void markInsertionPointAsFound() {
+        if (debugOutput) {
+            outs() << "  !! Insertion point found at ";
+            outs() << insertionPoint.getSpellingLineNumber() << ":" << insertionPoint.getSpellingColumnNumber() << "\n";
+        }
+        insertionPointFound = true;
+
+        if (insertionPoint.getSpellingColumnNumber() != 1) {
             if (debugOutput) {
-                outs() << "  !! Insertion point found!\n";
+                outs() << "     Insertion point is not at the line beginning -> adding a newline\n";
             }
-            insertionPointFound = true;
+            rewriter.InsertTextAfter(insertionPoint, "\n");
         }
     }
 
