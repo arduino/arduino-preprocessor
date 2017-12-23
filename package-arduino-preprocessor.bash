@@ -50,7 +50,7 @@ function fetch_llvm {
 
   rm -rf clang
   mkdir clang
-  tar xfv $fetched -C clang --strip-components=1
+  tar xf $fetched -C clang --strip-components=1
 }
 
 #if [[ $CROSS_COMPILE == "mingw" ]] ; then
