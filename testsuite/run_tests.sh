@@ -32,16 +32,19 @@
 source term.sh
 
 test_preprocessor() {
+	rm -rf tmp
+	mkdir tmp
+
 	TEST=$1
 	say "@cyan[[Testing preprocessor on @b$TEST]]"
-	../arduino-preprocessor/arduino-preprocessor $TEST -- -std=gnu++11 > tmp.cpp
+	../arduino-preprocessor/arduino-preprocessor $TEST -- -std=gnu++11 > tmp/preproc.cpp
 	if [ $? -ne 0 ]; then
 		fail "Error running arduino-preprocessor"
 		return 1
 	fi
 
 	say "@cyan[[Running compiler...]]"
-	g++ -std=gnu++11 -c tmp.cpp
+	g++ -std=gnu++11 -c tmp/preproc.cpp -o tmp/preproc.o
 	if [ $? -ne 0 ]; then
 		# if the test fails output the preprocessed source code
 		echo ""
