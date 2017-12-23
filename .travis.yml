@@ -1,0 +1,5 @@
+language: cpp
+
+script:
+  - ./package-arduino-preprocessor.bash 
+
