@@ -1,5 +1,9 @@
 language: cpp
 
-script:
+install:
   - ./package-arduino-preprocessor.bash 
+  - cd testsuite
+
+script:
+  - ./run_tests.sh
 
