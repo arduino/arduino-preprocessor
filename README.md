@@ -1,5 +1,7 @@
 # Arduino Sketch preprocessor
 
+image:https://travis-ci.org/arduino/arduino-preprocessor.svg?branch=master["Build Status", link="https://travis-ci.org/arduino/arduino-preprocessor"]
+
 This repository contains the source code of the Arduino Sketch preprocessor.
 The main purpose of this tool is to parse an Arduino Sketch (usually made with the [Arduino IDE](https://github.com/arduino/Arduino)) and convert it into a valid C++ source code.
 
@@ -38,7 +40,7 @@ The `arduino-preprocessor` tool takes care to handle this last step.
 
 The only mandatory parameter is the name of the file to be processed and the terminating double dash `--`. Every parameter after the `--` is passed as-is to the clang compiler backend.
 
-The tool will output the processed source code on the standard output.
+The tool outputs the processed source code on the standard output.
 
 For example the file `t.cpp`:
 
@@ -109,7 +111,7 @@ Output diagnostics (errors and warnings) in JSON format. The processed source wi
 
 ### Option `-debug`
 
-This option enable debugging output during the processing of the Sketch and a lot of debugging messages are printed. This option should really be used when a problem is found to understand what's happening and to produce a better bug-report when filing an issue.
+This option enable debugging output during the processing of the Sketch and a lot of debugging messages are printed. This option should be used when a problem is found to understand what's happening and to produce a better bug-report when filing an issue.
 
 ### Option `-version`
 
