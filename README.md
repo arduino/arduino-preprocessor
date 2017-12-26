@@ -1,6 +1,6 @@
 # Arduino Sketch preprocessor
 
-image:https://travis-ci.org/arduino/arduino-preprocessor.svg?branch=master["Build Status", link="https://travis-ci.org/arduino/arduino-preprocessor"]
+[![Build Status](https://travis-ci.org/arduino/arduino-preprocessor.svg?branch=master)](https://travis-ci.org/arduino/arduino-preprocessor)
 
 This repository contains the source code of the Arduino Sketch preprocessor.
 The main purpose of this tool is to parse an Arduino Sketch (usually made with the [Arduino IDE](https://github.com/arduino/Arduino)) and convert it into a valid C++ source code.
