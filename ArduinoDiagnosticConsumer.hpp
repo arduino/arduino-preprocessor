@@ -41,11 +41,11 @@ public:
 
     void collectUndeclaredIdentifiersIn(IdentifiersList &list);
 
-    void outputJsonDiagnosticsTo(ostream &out);
+    void outputJsonDiagnosticsTo(raw_ostream &out);
 
 private:
     IdentifiersList *undeclaredIdentifiersList = nullptr;
-    ostream *jsonDiagnosticOutput = nullptr;
+    raw_ostream *jsonDiagnosticOutput = nullptr;
 
     void HandleDiagnostic(DiagnosticsEngine::Level level, const Diagnostic& info) override;
 };

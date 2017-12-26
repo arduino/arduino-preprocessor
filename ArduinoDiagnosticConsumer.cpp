@@ -40,7 +40,7 @@ void ArduinoDiagnosticConsumer::collectUndeclaredIdentifiersIn(IdentifiersList &
     undeclaredIdentifiersList = &list;
 }
 
-void ArduinoDiagnosticConsumer::outputJsonDiagnosticsTo(ostream &out) {
+void ArduinoDiagnosticConsumer::outputJsonDiagnosticsTo(raw_ostream &out) {
     jsonDiagnosticOutput = &out;
 }
 

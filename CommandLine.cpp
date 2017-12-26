@@ -58,8 +58,8 @@ static cl::opt<bool> outputDiagnosticsOpt("output-diagnostics");
 static cl::opt<string> outputCodeCompletionsOpt("output-code-completions");
 
 static void printVersion() {
-    cout << "Arduino (https://www.arduino.cc/):\n";
-    cout << "  arduino-preprocessor version " VERSION "\n";
+    outs() << "Arduino (https://www.arduino.cc/):\n";
+    outs() << "  arduino-preprocessor version " VERSION "\n";
 }
 
 CommonOptionsParser doCommandLineParsing(int argc, const char **argv) {

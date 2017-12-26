@@ -283,14 +283,14 @@ int main(int argc, const char **argv) {
     ArduinoDiagnosticConsumer dc;
     dc.collectUndeclaredIdentifiersIn(undeclaredIdentifiers);
     if (outputDiagnostics) {
-        dc.outputJsonDiagnosticsTo(cout);
+        dc.outputJsonDiagnosticsTo(outs());
     }
     tool.setDiagnosticConsumer(&dc);
 
     int res = tool.run(newFrontendActionFactory<INOPreprocessAction>().get());
 
     if (outputPreprocessedSketch) {
-        cout << preprocessedSketch;
+        outs() << preprocessedSketch;
     }
 
     if (outputCodeCompletions) {
