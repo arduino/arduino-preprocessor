@@ -73,6 +73,9 @@ if [[ $OS == "GNU/Linux" ]] ; then
   elif [[ $MACHINE == "armv7l" ]] ; then
     OUTPUT_TAG=armhf-pc-linux-gnu
     fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-linux-arm.tar.xz
+  elif [[ $MACHINE == "ppc64le" ]] ; then
+    OUTPUT_TAG=powerpc64le-pc-linux-gnu
+    fetch_llvm https://github.com/cmaglie/llvm-clang-build-scripts/releases/download/4.0.0/llvm-clang-4.0.0-linux-powerpc64le.tar.xz
   else
     echo Linux Machine not supported: $MACHINE
     exit 1
